@@ -12,15 +12,8 @@ def broadcastMsg(sock, message):
 				socket.close()
 				CONNECT_LIST.remove(socket)
 
-# create new thread for this
-def clientThread(conn):
-	conn.send("You've connected to server")
-	while True:
-		data = conn.recv(1024)
-		print  "'" + str(conn) + "'" + " has sent message: " + data 
-		broadcastMsg(conn, data)
-	conn.close()
-	print "Close connection with " + str(addr[1])
+def worker():
+	pass
 
 if __name__ == "__main__":
 
@@ -62,8 +55,4 @@ if __name__ == "__main__":
 						sock.close()
 						CONNECT_LIST.remove(sock)
 						continue
-		#Start thread using threading 	
-		#th = Thread(target = clientThread, args=(conn, ))
-		#th.start()
-		#print "New thread created for <" + addr[0] + "," + str(addr[1]) + ">"
 	server_socket.close()

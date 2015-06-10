@@ -6,6 +6,10 @@ port = 9999
 def sendPicture():
 	pass
 
+def prompt():
+	sys.stdout.write("<ME> ")
+	sys.stdout.flush()
+
 if __name__ == "__main__":
 	#create socket
 	try:
@@ -21,9 +25,8 @@ if __name__ == "__main__":
 	except socket.error:
 		print "Can't reach the server, closing program..."
 		sys.exit()
-	sys.stdout.write("<ME>")
-	sys.stdout.flush()
-
+	prompt()
+	
 	#Message loop
 	while True:
 		socket_list = [sys.stdin, clinet_socket]
@@ -36,12 +39,10 @@ if __name__ == "__main__":
 					sys.exit()
 				else:
 					sys.stdout.write(data)
-					sys.stdout.write("<ME>")
-					sys.stdout.flush()
+					prompt()
 			else:
 				message = sys.stdin.readline()
 				if message == '':
 					continue					
 				clinet_socket.send(message)
-				sys.stdout.write("<ME>")
-				sys.stdout.flush()
+				prompt()
