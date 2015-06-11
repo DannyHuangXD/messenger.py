@@ -3,8 +3,13 @@ import socket, sys, wx, select
 host  = socket.gethostname()
 port = 9999
 
-def sendPicture():
-	pass
+def sendPicture(sock):
+	fileDir = raw_input("FileRoute")
+	fileContent = open(fileDir, 'rb')
+	file_data = fileContent.read()
+	sock.sendall(file_data)
+	print "Data sent."
+
 
 def prompt():
 	sys.stdout.write("<ME> ")
@@ -26,7 +31,7 @@ if __name__ == "__main__":
 		print "Can't reach the server, closing program..."
 		sys.exit()
 	prompt()
-	
+
 	#Message loop
 	while True:
 		socket_list = [sys.stdin, clinet_socket]

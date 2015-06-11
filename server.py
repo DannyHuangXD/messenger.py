@@ -15,13 +15,12 @@ def broadcastMsg(sock, message):
 def createChatRoom(sock):
 	pass
 
-def worker():
-	pass
 
 if __name__ == "__main__":
 
 	host = socket.gethostname()
 	port = 9999
+	msgLength = 2048
 	CONNECT_LIST = []
 	CHATROOM_LIST = []
 	server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -50,7 +49,7 @@ if __name__ == "__main__":
 				broadcastMsg(conn, "[%s, %s] entered the chat\n" % addr)
 			else:
 				try:
-					data = sock.recv(1024)
+					data = sock.recv(msgLength)
 					if data:
 						broadcastMsg(sock, "\r" + '<' + str(sock.getpeername()) + '> ' + data)
 					if data == 'i.cc\n':
