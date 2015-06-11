@@ -12,6 +12,9 @@ def broadcastMsg(sock, message):
 				socket.close()
 				CONNECT_LIST.remove(socket)
 
+def createChatRoom(sock):
+	pass
+
 def worker():
 	pass
 
@@ -20,6 +23,7 @@ if __name__ == "__main__":
 	host = socket.gethostname()
 	port = 9999
 	CONNECT_LIST = []
+	CHATROOM_LIST = []
 	server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 	server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 
@@ -49,6 +53,8 @@ if __name__ == "__main__":
 					data = sock.recv(1024)
 					if data:
 						broadcastMsg(sock, "\r" + '<' + str(sock.getpeername()) + '> ' + data)
+					if data == 'i.cc\n':
+						createChatRoom(sock)
 				except:
 						broadcastMsg(sock, "Client (%s, %s) is offline" % addr)
 						print "DCed with <%s, %s>" % addr
