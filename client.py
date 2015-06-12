@@ -3,12 +3,14 @@ import socket, sys, wx, select
 host  = socket.gethostname()
 port = 9999
 
-def sendPicture(sock):
+def sendPicture():
+	address = (host, 9998)
+	udp_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	fileDir = raw_input("FileRoute")
 	fileContent = open(fileDir, 'rb')
 	file_data = fileContent.read()
-	sock.sendall(file_data)
-	print "Data sent."
+	udp_s.sendto(file_data, address)
+	print "Picture sent."
 
 
 def prompt():
@@ -48,6 +50,9 @@ if __name__ == "__main__":
 			else:
 				message = sys.stdin.readline()
 				if message == '':
-					continue					
+					continue
 				clinet_socket.send(message)
+				if message == 'i.pic\n':
+					sendPicture()
+					continue
 				prompt()

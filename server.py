@@ -1,6 +1,7 @@
 import socket, sys, select
 from threading import Thread
 from Queue import Queue
+from PIL import Image
 
 # define broadcastMsg
 def broadcastMsg(sock, message):
@@ -15,9 +16,23 @@ def broadcastMsg(sock, message):
 def createChatRoom(sock):
 	pass
 
+def getPic():
+	address = (socket.gethostname(), 9998)
+	udp_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+	udp_s.bind(address)
+	pic_data, addr = udp_s.recvfrom(8192*2)
+	if not pic_data:
+		print "No shit"
+		udp_s.close()
+		return
+	print "received picture from ", addr
+	udp_s.close()
+	fp = open("image.png", "wb")
+	fp.write(pic_data)
+	fp.close()
+
 
 if __name__ == "__main__":
-
 	host = socket.gethostname()
 	port = 9999
 	msgLength = 2048
@@ -32,7 +47,7 @@ if __name__ == "__main__":
 	except socket.error, msg:
 		print "Can't bind. Error code: " + str(msg[0]) + ", Message " + msg[1]
 		sys.exit()	
-	print 'Socket bind success, ' + str(host)
+	print 'Socket bind success, ' + str(host) + ", " + str(port)
 	server_socket.listen(5)
 	CONNECT_LIST.append(server_socket)
 	print 'Listening to connection requests...'
@@ -54,6 +69,8 @@ if __name__ == "__main__":
 						broadcastMsg(sock, "\r" + '<' + str(sock.getpeername()) + '> ' + data)
 					if data == 'i.cc\n':
 						createChatRoom(sock)
+					if data == 'i.pic\n':
+						getPic()
 				except:
 						broadcastMsg(sock, "Client (%s, %s) is offline" % addr)
 						print "DCed with <%s, %s>" % addr
