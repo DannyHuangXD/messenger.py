@@ -3,6 +3,7 @@ from threading import Thread
 from Queue import Queue
 from PIL import Image
 
+
 # define broadcastMsg
 def broadcastMsg(sock, message):
 	for socket in CONNECT_LIST:
@@ -13,6 +14,17 @@ def broadcastMsg(sock, message):
 				socket.close()
 				CONNECT_LIST.remove(socket)
 
+def broadcastPic(sock, message, pic_bin):
+	print "Broadcasting picture\n"
+	for socket in CONNECT_LIST:
+		if socket != server_socket and socket != sock:
+				socket.send("i.ppic")
+				print "send"
+				file_frags = [file_data[i: i + 1024] for i in range(0, len(file_data), 1024)]
+				for x in file_frags:
+					socket.send(x)
+
+
 def createChatRoom(sock):
 	pass
 
@@ -20,17 +32,14 @@ def getPic():
 	address = (socket.gethostname(), 9998)
 	udp_s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
 	udp_s.bind(address)
-	pic_data, addr = udp_s.recvfrom(8192*2)
-	if not pic_data:
-		print "No shit"
-		udp_s.close()
-		return
-	print "received picture from ", addr
+	while True:
+		pic_frag, addr = udp_s.recvfrom(1024)
+		if pic_frag == 'end':
+			break
+		fp = open("image.png", "ab")
+		fp.write(pic_frag)
+		fp.close()
 	udp_s.close()
-	fp = open("image.png", "wb")
-	fp.write(pic_data)
-	fp.close()
-
 
 if __name__ == "__main__":
 	host = socket.gethostname()
@@ -71,9 +80,12 @@ if __name__ == "__main__":
 						createChatRoom(sock)
 					if data == 'i.pic\n':
 						getPic()
+						#pic_data = open("/Users/dhxd/Desktop/messenger.py/image.jpg", rb)
+						#pic_bin = pic_data.read()
+						#broadcastPic(sock, "\r" + '<' + str(sock.getpeername()) + '> ' + "Picture sent", pic_bin)
 				except:
 						broadcastMsg(sock, "Client (%s, %s) is offline" % addr)
-						print "DCed with <%s, %s>" % addr
+						print "Disconnected with <%s, %s>" % addr
 						sock.close()
 						CONNECT_LIST.remove(sock)
 						continue
